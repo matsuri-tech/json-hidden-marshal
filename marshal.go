@@ -13,7 +13,9 @@ func scanToMap(val interface{}) (map[string]interface{}, error) {
 	values := reflect.ValueOf(val)
 
 	// pointerであればderefする
+	// 一度しかderefしないのよくわからなくない？という気持ちもあるけど…
 	if values.Kind() == reflect.Ptr {
+		strct = strct.Elem()
 		values = values.Elem()
 	}
 

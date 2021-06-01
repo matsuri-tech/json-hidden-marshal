@@ -52,6 +52,17 @@ func TestMarshal(t *testing.T) {
 			},
 			expected: `{"Name":"foo"}`,
 		},
+		{
+			// Pass pointer
+			in: &struct {
+				Name     string `json:"name"`
+				Password string `json:"password" hidden:"mask"`
+			}{
+				Name:     "foo",
+				Password: "password",
+			},
+			expected: `{"name":"foo","password":"********"}`,
+		},
 	}
 
 	for _, c := range cases {
