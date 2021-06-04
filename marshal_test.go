@@ -6,18 +6,20 @@ import (
 )
 
 func TestMarshal(t *testing.T) {
+	type testStruct struct {
+		Name     string `json:"name"`
+		Name2    string `json:"name2" hidden:"-"`       // skip
+		Name3    string `json:"name3" hidden:"true"`    // skip
+		Password string `json:"password" hidden:"mask"` // masked
+	}
+
 	cases := []struct {
 		in       interface{}
 		expected string
 	}{
 		{
 			// hidden:- or hidden:true to skip, hidden:mask to mask
-			in: struct {
-				Name     string `json:"name"`
-				Name2    string `json:"name2" hidden:"-"`       // skip
-				Name3    string `json:"name3" hidden:"true"`    // skip
-				Password string `json:"password" hidden:"mask"` // masked
-			}{
+			in: testStruct{
 				Name:     "foo",
 				Password: "password",
 			},
@@ -63,6 +65,39 @@ func TestMarshal(t *testing.T) {
 			},
 			expected: `{"name":"foo","password":"********"}`,
 		},
+		{
+			// interface{} and struct
+			in: struct {
+				User interface{} `json:"user"`
+			}{
+				testStruct{
+					Name:     "foo",
+					Password: "password",
+				},
+			},
+			expected: `{"user":{"name":"foo","password":"********"}}`,
+		},
+		{
+			// interface{} with hidden tag
+			in: struct {
+				Name     string `json:"name"`
+				Name2    string `json:"name2" hidden:"-"`       // skip
+				InterfaceValue    interface{} `json:"interface_value"`
+				InterfaceHidden interface{} `json:"interface_hidden" hidden:"true"`
+				Password string `json:"password" hidden:"mask"` // masked
+			}{
+				Name:     "foo",
+				InterfaceValue: true,
+				InterfaceHidden: testStruct{
+					Name:     "",
+					Name2:    "",
+					Name3:    "",
+					Password: "",
+				},
+				Password: "password",
+			},
+			expected: `{"name":"foo","interface_value": true,"password":"********"}`,
+		},
 	}
 
 	for _, c := range cases {
@@ -71,6 +106,6 @@ func TestMarshal(t *testing.T) {
 			t.Errorf("%+v\n", err)
 		}
 
-		assert.JSONEq(t, string(out), c.expected)
+		assert.JSONEq(t, c.expected, string(out))
 	}
 }
