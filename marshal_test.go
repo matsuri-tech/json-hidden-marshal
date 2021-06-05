@@ -80,13 +80,13 @@ func TestMarshal(t *testing.T) {
 		{
 			// interface{} with hidden tag
 			in: struct {
-				Name     string `json:"name"`
-				Name2    string `json:"name2" hidden:"-"`       // skip
-				InterfaceValue    interface{} `json:"interface_value"`
+				Name            string      `json:"name"`
+				Name2           string      `json:"name2" hidden:"-"` // skip
+				InterfaceValue  interface{} `json:"interface_value"`
 				InterfaceHidden interface{} `json:"interface_hidden" hidden:"true"`
-				Password string `json:"password" hidden:"mask"` // masked
+				Password        string      `json:"password" hidden:"mask"` // masked
 			}{
-				Name:     "foo",
+				Name:           "foo",
 				InterfaceValue: true,
 				InterfaceHidden: testStruct{
 					Name:     "",
