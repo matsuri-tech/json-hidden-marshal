@@ -45,7 +45,10 @@ func scanToMap(val interface{}) (map[string]interface{}, error) {
 
 				m[fieldName] = v
 			} else if ival.Kind() == reflect.Interface {
-				if reflect.TypeOf(ival.Interface()).Kind() == reflect.Struct {
+				t := reflect.TypeOf(ival.Interface())
+				if t == nil {
+					m[fieldName] = nil
+				} else if t.Kind() == reflect.Struct {
 					// PERF: 再帰をやめる
 					v, err := scanToMap(ival.Interface())
 					if err != nil {
