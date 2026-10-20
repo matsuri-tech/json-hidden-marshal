@@ -1,6 +1,6 @@
 module github.com/matsuri-tech/json-hidden-marshal
 
-go 1.22
+go 1.26.0
 
 require github.com/stretchr/testify v1.7.0
 
